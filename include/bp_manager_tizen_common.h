@@ -42,7 +42,7 @@ extern "C" {
 typedef enum {
 	BP_TIZEN_EVENT_1 = 0, /**< The bp tizen event 1*/
 	BP_TIZEN_EVENT_2 = 1, /**< The bp tizen event 2*/
-} bptizen_event_type_e;
+} bp_manager_tizen_event_type_e;
 
 /**
  * @brief Gets the one of the application.
@@ -52,7 +52,7 @@ typedef enum {
  * @retval #BPTIZEN_ERROR_NONE Successful
  * @retval #BPTIZEN_ERROR_INVALID_PARAMETER Invalid parameter
  */
-int bptizen_get_one();
+int bp_manager_tizen_get_one();
 
 /**
  * @}

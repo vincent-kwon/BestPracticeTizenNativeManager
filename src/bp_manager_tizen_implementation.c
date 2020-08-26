@@ -16,15 +16,15 @@
 
 #include <stdlib.h>
 #include <dlog.h>
-#include <bp_tizen_common.h>
+#include <bp_manager_tizen_common.h>
 
 #ifdef LOG_TAG
 #undef LOG_TAG
 #endif
 
-#define LOG_TAG "CAPI_BPS_BP_TIZEN"
+#define LOG_TAG "BPS_BP_MANAGER_TIZEN"
 
-int bptizen_get_one()
+int bp_manager_tizen_get_one()
 {
 	dlog_print(DLOG_INFO, LOG_TAG, "bptizen_get_one is called.......");
 	return 0;
