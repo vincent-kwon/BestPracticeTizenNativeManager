@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=@DBUS_INTERFACE@
+Exec=/bin/false
+SystemdService=@SERVER@.service

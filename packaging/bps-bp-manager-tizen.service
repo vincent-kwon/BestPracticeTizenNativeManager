@@ -1,5 +1,5 @@
 [Unit]
-Description=Alarm server
+Description=Best Practice Tizen Manager
 
 [Service]
 User=app_fw
