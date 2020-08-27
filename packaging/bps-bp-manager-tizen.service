@@ -1,0 +1,19 @@
+[Unit]
+Description=Alarm server
+
+[Service]
+User=app_fw
+Group=app_fw
+BusName=org.tizen.bp.manager.tizen
+Type=dbus
+ExecStart=/usr/bin/bps-bp-manager-tizen
+SmackProcessLabel=System
+Capabilities=cap_sys_time=i
+SecureBits=keep-caps
+TimeoutStopSec=3s
+Restart=on-failure
+RestartSec=0
+
+[Install]
+WantedBy=multi-user.target
+

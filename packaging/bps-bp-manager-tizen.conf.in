@@ -1,0 +1,2 @@
+d /run/bps-bp-manager-tizen 0777 root users -
+d /var/log/bps-bp-manager-tizen/bps-bp-manager-tizen 0775 app_fw app_fw -

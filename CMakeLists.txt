@@ -15,9 +15,9 @@ ADD_SUBDIRECTORY(src)
 #ADD_DEPENDENCIES(${APP_COMMON_UNITTESTS} capi-appfw-app-common)
 #ENDIF(NOT DEFINED MINIMUM_BUILD)
 
-INSTALL(
-        DIRECTORY ${INC_DIR}/ DESTINATION include/bp-manager-tizen
-        FILES_MATCHING
-        PATTERN "*_private.h" EXCLUDE
-        PATTERN "${INC_DIR}/*.h"
-        )
+#INSTALL(
+#        DIRECTORY ${INC_DIR}/ DESTINATION include/bp-manager-tizen
+#        FILES_MATCHING
+#        PATTERN "*_private.h" EXCLUDE
+#        PATTERN "${INC_DIR}/*.h"
+#        )

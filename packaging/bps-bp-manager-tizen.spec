@@ -5,6 +5,7 @@ Release:    0
 Group:      System/API
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
+Source1:    bps-bp-manager-tizen.service
 Source1001:     bps-bp-manager-tizen.manifest
 BuildRequires:  cmake
 BuildRequires:  tidl
@@ -55,6 +56,10 @@ Group:      Application Framework/Testing
 Best practice tizen gcov objects
 %endif
 
+#################################################
+# bps-bp-manager-tizen build
+#################################################
+
 %prep
 %setup -q
 cp %{SOURCE1001} .
@@ -74,7 +79,14 @@ export LDFLAGS+=" -lgcov"
 %endif
 
 MAJORVER=`echo %{version} | awk 'BEGIN {FS="."}{print $1}'`
-%cmake . -DFULLVER=%{version} -DMAJORVER=${MAJORVER}
+%cmake . -DFULLVER=%{version} -DMAJORVER=${MAJORVER} \
+	-DBIN_INSTALL_DIR:PATH=%{_bindir}
+#	-DTZ_SYS_ETC=%{TZ_SYS_ETC} 
+#	-D_APPFW_FEATURE_ALARM_MANAGER_MODULE_LOG:BOOL=${_APPFW_FEATURE_ALARM_MANAGER_MODULE_LOG} \
+#	-DALARM_CONF_DIR=%{_datadir}/alarm-manager \
+#	-DBUILD_GTESTS=%{?gtests:1}%{!?gtests:0} \
+#	-DBUILD_GCOV=%{?gcov:1}%{!?gcov:0} \
+
 %__make %{?jobs:-j%jobs}
 
 %if 0%{?gcov:1}
@@ -95,6 +107,12 @@ install -m 0644 bp-tizen.zip %{buildroot}%{_datadir}/gcov/
 rm -rf %{buildroot}
 %make_install
 
+mkdir -p %{buildroot}%{_unitdir}/multi-user.target.wants
+mkdir -p %{buildroot}%{_unitdir_user}/sockets.target.wants
+# TODO(vincent): Need to copy service file for systemd
+install -m 0644 %SOURCE1 %{buildroot}%{_unitdir}/bps-bp-manager-tizen.service
+
+
 %if 0%{?gcov:1}
 mkdir -p %{buildroot}%{_datadir}/gcov/obj
 install -m 0644 gcov-obj/* %{buildroot}%{_datadir}/gcov/obj
@@ -102,26 +120,26 @@ install -m 0644 gcov-obj/* %{buildroot}%{_datadir}/gcov/obj
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 #rm -f src/remote_service_proxy.c
 #rm -f src/remote_service_stub.c
 #rm -f src/remote_service_proxy.h
 #rm -f src/remote_service_stub.h
 
+# TODO(vincent): 
+%files -n bps-bp-manager-tizen
+%manifest bps-bp-manager-tizen.manifest
+%{_bindir}/bps-bp-manager-tizen*
+%attr(0644,root,root) %{_unitdir}/bps-bp-manager-tizen.service
+#%{_unitdir}/multi-user.target.wants/bps-bp-manager-tizen.service
+#%attr(0644,root,root) %{_datadir}/dbus-1/system-services/org.tizen.alarm.manager.service
+%license LICENSE
+%config %{_sysconfdir}/dbus-1/system.d/bps-bp-manager-tizen.conf
+
 #%post -n bps-bp-manager-tizen-unittests
 #%if 0%{?gcov:1}
 #%{_bindir}/bp-manager-tizen_unittests
 #%endif
-
-%files
-%manifest %{name}.manifest
-%{_libdir}/libbps-bp-manager-tizen.so.*
-%license LICENSE
-
-%files devel
-%manifest %{name}.manifest
-%{_includedir}/bp-manager-tizen/bp_manager_tizen_common.h
-%{_libdir}/pkgconfig/bps-bp-manager-tizen.pc
-%{_libdir}/libbps-bp-manager-tizen.so
 
 #################################################
 # bps-bp-manager-tizen-unittests

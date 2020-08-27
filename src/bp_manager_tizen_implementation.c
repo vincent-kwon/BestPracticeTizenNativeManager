@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include <dlog.h>
+#include <glib.h>
 #include <bp_manager_tizen_common.h>
 
 #ifdef LOG_TAG
@@ -27,5 +28,27 @@
 int bp_manager_tizen_get_one()
 {
 	dlog_print(DLOG_INFO, LOG_TAG, "bptizen_get_one is called.......");
+	return 0;
+}
+
+int _bp_manager_initialize() 
+{
+	dlog_print(DLOG_INFO, LOG_TAG, "_bp_manager_initialize is called.......");
+	return 0;
+}
+
+int main()
+{
+	GMainLoop *mainloop = NULL;
+
+	LOGD("Enter main loop\n");
+
+#ifdef TIZEN_TEST_GCOV
+	setenv("GCOV_PREFIX", "/tmp/daemon", 1);
+#endif
+    _bp_manager_initialize();
+	mainloop = g_main_loop_new(NULL, FALSE);
+	g_main_loop_run(mainloop);
+
 	return 0;
 }
