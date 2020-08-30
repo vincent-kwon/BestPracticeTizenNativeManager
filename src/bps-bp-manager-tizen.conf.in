@@ -3,14 +3,14 @@
 <busconfig>
 	<policy user="root">
 		<allow own="org.tizen.bp.manager.tizen"/>
-		<allow send_destination="org.tizen.bp.manager.tizen"/>
+		<allow send_destination="org.tizen.bp.manager.tizen" send_interface="org.tizen.bps.bp.manager.interface" send_member="get"/>
 	</policy>
 	<policy user="app_fw">
 		<allow own="org.tizen.bp.manager.tizen"/>
 		<allow send_destination="org.tizen.bp.manager.tizen"/>
-	</policy>
+		<allow send_destination="org.tizen.bp.manager.tizen" send_interface="org.tizen.bps.bp.manager.interface" send_member="get"/>
 	<policy context="default">
-		<deny own="org.tizen.bp.manager.tizen"/>
-		<allow send_destination="org.tizen.bp.manager.tizen" send_interface="org.tizen.bps.bp.manager.interface" send_member="bp.manager.methodinterface1.method.name"/>
+		<allow own="org.tizen.bp.manager.tizen"/>
+		<allow send_destination="org.tizen.bp.manager.tizen" send_interface="org.tizen.bps.bp.manager.interface" send_member="get"/>
 	</policy>
 </busconfig>

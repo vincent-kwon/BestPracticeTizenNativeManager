@@ -23,7 +23,7 @@
 const char* bp_manager_bus_name =       "org.tizen.bp.manager.tizen";
 const char* bp_manager_object_path =    "/org/tizen/bps/bp/tizen/manager/object";
 const char* bp_manager_interface_name = "org.tizen.bps.bp.manager.interface";
-const char* bp_manager_method_name_1 = "bp.manager.methodinterface1.method.name";
+const char* bp_manager_method_name_1 = "get";
 //const char* bp_manager_signal_name_1 = "launch_new_application";
 
 // const char* interface_name_of_the_method = "bps.bp.methodinterface1.name";
@@ -158,7 +158,8 @@ int bp_manager_tizen_dbus_server_run()
 			//dlog_print(DLOG_INFO, LOG_TAG, "bp_manager method call received request is null.\n");
 			continue;
 		}
-
+         dlog_print(DLOG_INFO, LOG_TAG, "bp_manager method call received request is not null.\n");
+			
 		//check this is a method call for the right interface & method
 		if (dbus_message_is_method_call(msg, bp_manager_interface_name, bp_manager_method_name_1)) 
 		{

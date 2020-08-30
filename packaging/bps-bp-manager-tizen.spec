@@ -135,7 +135,7 @@ install -m 0644 gcov-obj/* %{buildroot}%{_datadir}/gcov/obj
 # TODO(vincent): who copies it? Temporarily disabled
 #%{_unitdir}/multi-user.target.wants/bps-bp-manager-tizen.service
 # TODO(vincent): who copies it? Temporarily disabled
-#%attr(0644,root,root) %{_datadir}/dbus-1/system-services/org.tizen.bp.manager.tizen.service
+%attr(0644,root,root) %{_datadir}/dbus-1/system-services/org.tizen.bp.manager.tizen.service
 %license LICENSE
 %config %{_sysconfdir}/dbus-1/system.d/bps-bp-manager-tizen.conf
 

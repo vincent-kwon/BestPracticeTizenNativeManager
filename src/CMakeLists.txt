@@ -42,5 +42,5 @@ INSTALL(TARGETS ${fw_name} DESTINATION ${BIN_INSTALL_DIR})
 CONFIGURE_FILE(bps-bp-manager-tizen.conf.in bps-bp-manager-tizen.conf @ONLY)
 INSTALL(FILES bps-bp-manager-tizen.conf DESTINATION ${SYSCONF_INSTALL_DIR}/dbus-1/system.d/)
 
-# CONFIGURE_FILE(${DBUS_INTERFACE}.service.in ${DBUS_INTERFACE}.service @ONLY)
-# INSTALL(FILES ${DBUS_INTERFACE}.service DESTINATION ${SHARE_INSTALL_PREFIX}/dbus-1/system-services/)
+CONFIGURE_FILE(${DBUS_INTERFACE}.service.in ${DBUS_INTERFACE}.service @ONLY)
+INSTALL(FILES ${DBUS_INTERFACE}.service DESTINATION ${SHARE_INSTALL_PREFIX}/dbus-1/system-services/)
