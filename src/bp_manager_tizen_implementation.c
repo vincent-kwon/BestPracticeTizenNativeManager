@@ -35,7 +35,7 @@ int bp_manager_tizen_get_one()
 
 int _bp_manager_initialize() 
 {
-	dlog_print(DLOG_INFO, LOG_TAG, "_bp_manager_initialize is called.......");
+	dlog_print(DLOG_INFO, LOG_TAG, "_bp_manager_initialize is called.......Geeee");
 	bp_manager_tizen_dbus_server_run();
 	return 0;
 }

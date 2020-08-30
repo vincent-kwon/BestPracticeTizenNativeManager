@@ -18,17 +18,18 @@
 #include <dlog.h>
 #include <dbus/dbus.h>
 
-const char* bp_manager_bus_name =       "org.tizen.bps.bp.manager.bus";
-const char* bp_manager_interface_name = "org.tizen.bps.bp.manager.interface";
+#define LOG_TAG "BPS_BP_MANAGER_TIZEN"
+
+const char* bp_manager_bus_name =       "org.tizen.bp.manager.tizen";
 const char* bp_manager_object_path =    "/org/tizen/bps/bp/tizen/manager/object";
-const char* interface_name_of_the_method = "bps.bp.methodinterface1.name";
-const char* name_of_the_method = "bps.bp.method.name";
-//Client will add the interface name for add_match
-//e.g., "type='signal',interface='test.signal.Type'
-const char* interface_name_of_the_signal = "request.to.launcherdaemon";
-//Once interface name is filtered, then name of signal is used
-//This value will be used by client with dbus_message_is_signal
-const char* name_of_the_signal = "launch_new_application";
+const char* bp_manager_interface_name = "org.tizen.bps.bp.manager.interface";
+const char* bp_manager_method_name_1 = "bp.manager.methodinterface1.method.name";
+//const char* bp_manager_signal_name_1 = "launch_new_application";
+
+// const char* interface_name_of_the_method = "bps.bp.methodinterface1.name";
+// const char* name_of_the_method = "bps.bp.method.name";
+// const char* interface_name_of_the_signal = "request.to.launcherdaemon";
+// const char* name_of_the_signal = "launch_new_application";
 
 void reply_to_method_call(DBusMessage* msg, DBusConnection* conn)
 {
@@ -98,11 +99,12 @@ int bp_manager_tizen_dbus_server_run()
 	DBusError err;
 	int ret = 0;
 
+    dlog_print(DLOG_INFO, LOG_TAG, "bp_manager_tizen_dbus_server_run\n");
     //initialize the error
 	dbus_error_init(&err);
 
 	//connect to the bus and check for errors
-	conn = dbus_bus_get(DBUS_BUS_SESSION, &err);
+	conn = dbus_bus_get(DBUS_BUS_SYSTEM, &err);
 
 	//Check for dbus error
 	if (dbus_error_is_set(&err)) 
@@ -118,25 +120,25 @@ int bp_manager_tizen_dbus_server_run()
 	}
 
 	//request our name on the bus and check for errors
-	ret = dbus_bus_request_name(conn, bp_manager_bus_name, DBUS_NAME_FLAG_REPLACE_EXISTING , &err);
+	//ret = dbus_bus_request_name(conn, bp_manager_bus_name, DBUS_NAME_FLAG_REPLACE_EXISTING , &err);
 
 	//For request name, check error
-	if (dbus_error_is_set(&err)) 
-	{
-		dlog_print(DLOG_INFO, LOG_TAG, "Name Error (%s)\n", err.message);
-		dbus_error_free(&err);
-	}
+	//if (dbus_error_is_set(&err)) 
+	//{
+	//	dlog_print(DLOG_INFO, LOG_TAG, "Name Error (%s)\n", err.message);
+	//	dbus_error_free(&err);
+	//}
 
 	//Check for primary for the requested name
-	if (DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER != ret) 
-	{
-		dlog_print(DLOG_INFO, LOG_TAG,  "Not Primary Owner (%d)\n", ret);
-		exit(1);
-	}
+	//if (DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER != ret) 
+	//{
+	//	dlog_print(DLOG_INFO, LOG_TAG,  "Not Primary Owner (%d)\n", ret);
+	//	exit(1);
+	//}
 
 	//The below two line are very important steps to received this signal "request.to.launcherdaemon"
-	dbus_bus_add_match(conn, "type='signal',interface='request.to.launcherdaemon'", &err); // see signals from the given interface
-	dbus_connection_flush(conn);
+	//dbus_bus_add_match(conn, "type='signal',interface='request.to.launcherdaemon'", &err); // see signals from the given interface
+	//dbus_connection_flush(conn);
 
 	//Wait for new message
 	while (true) 
@@ -146,23 +148,26 @@ int bp_manager_tizen_dbus_server_run()
 		int current_type;
 
 		//non blocking read of the next available message
+		
 		dbus_connection_read_write(conn, 0);
 		msg = dbus_connection_pop_message(conn);
-
+		
     	//loop again if we haven't got a message
 		if (NULL == msg) 
 		{
-			//fprintf(stdout, "[SystemServerD] Received null message, just continue....\n");
+			//dlog_print(DLOG_INFO, LOG_TAG, "bp_manager method call received request is null.\n");
 			continue;
 		}
 
 		//check this is a method call for the right interface & method
-		if (dbus_message_is_method_call(msg, interface_name_of_the_method, name_of_the_method)) 
+		if (dbus_message_is_method_call(msg, bp_manager_interface_name, bp_manager_method_name_1)) 
 		{
 		     //reply_to_method_call(msg, conn);
-			dlog_print(DLOG_INFO, LOG_TAG, "[SystemServerD] Method received request for %s\n", name_of_the_method);
+			dlog_print(DLOG_INFO, LOG_TAG, "bp_manager received request for %s %s\n", bp_manager_interface_name, bp_manager_method_name_1);
 			reply_to_method_call(msg, conn);
+			break;
 		}
+#if 0
 		//if not a method, then signal?
 		else if (dbus_message_is_signal(msg, interface_name_of_the_signal, name_of_the_signal)) 
 		{
@@ -203,9 +208,9 @@ int bp_manager_tizen_dbus_server_run()
 			dlog_print(DLOG_INFO, LOG_TAG, "DBus type others\n");
 			//Ignore something not filtered. May think about what can be placed here.
 		}
-
 		// free the message
 		dbus_message_unref(msg);
+#endif		
     }
         	// close the connection
 	dbus_connection_close(conn);
