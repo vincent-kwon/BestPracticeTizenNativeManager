@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 SET(INC_DIR include)
 
-SET(SERVER bp-manager-tizen)
+SET(SERVER bps-bp-manager-tizen)
 
 IF(NOT DEFINED DBUS_INTERFACE)
 	MESSAGE("No DBUS_INTERFACE. Check build system")

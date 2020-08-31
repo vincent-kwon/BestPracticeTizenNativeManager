@@ -1,4 +1,5 @@
 [D-BUS Service]
 Name=@DBUS_INTERFACE@
 Exec=/bin/false
+# /usr/lib/systemd/system/bps-bp-manager-tizen.service
 SystemdService=@SERVER@.service

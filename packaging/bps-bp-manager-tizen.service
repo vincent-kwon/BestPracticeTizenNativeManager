@@ -4,6 +4,7 @@ Description=Best Practice Tizen Manager
 [Service]
 User=app_fw
 Group=app_fw
+# TODO(vincent): what is relation between bus name and service.
 BusName=org.tizen.bp.manager.tizen
 Type=dbus
 ExecStart=/usr/bin/bps-bp-manager-tizen
