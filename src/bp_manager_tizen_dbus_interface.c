@@ -108,7 +108,7 @@ const char* param = "This must not be null";
 	dbus_error_init(&err);
 
 	//connect to the bus and check for errors
-	conn = dbus_bus_get(DBUS_BUS_SYSTEM, &err);
+	conn = dbus_bus_get(DBUS_BUS_SESSION, &err);
 	//request our name on the bus and check for errors
 
     dlog_print(DLOG_INFO, LOG_TAG, "Fuck bp_manager_tizen_dbus_server_run 1\n");
