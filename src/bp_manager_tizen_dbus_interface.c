@@ -25,7 +25,10 @@ const char* bp_manager_object_path =    "/org/tizen/bps/bp/tizen/manager/object"
 const char* bp_manager_interface_name = "org.tizen.bps.bp.manager.interface";
 const char* bp_manager_method_name_1 = "get";
 //const char* bp_manager_signal_name_1 = "launch_new_application";
-
+const char* bpm_bus_name =       "org.tizen.bp.manager";
+const char* bpm_object_path =    "/org/tizen/bp/manager";
+const char* bpm_interface_name = "org.tizen.bp.manager.interface";
+const char* bpm_method_name_1 = "get";
 // const char* interface_name_of_the_method = "bps.bp.methodinterface1.name";
 // const char* name_of_the_method = "bps.bp.method.name";
 // const char* interface_name_of_the_signal = "request.to.launcherdaemon";
@@ -97,15 +100,21 @@ int bp_manager_tizen_dbus_server_run()
 	DBusMessageIter args;
 	DBusConnection* conn;
 	DBusError err;
+	DBusPendingCall* pending;
 	int ret = 0;
-
-    dlog_print(DLOG_INFO, LOG_TAG, "bp_manager_tizen_dbus_server_run\n");
+const char* param = "This must not be null";
+    dlog_print(DLOG_INFO, LOG_TAG, "Fuck bp_manager_tizen_dbus_server_run\n");
     //initialize the error
 	dbus_error_init(&err);
 
 	//connect to the bus and check for errors
 	conn = dbus_bus_get(DBUS_BUS_SYSTEM, &err);
+	//request our name on the bus and check for errors
 
+    dlog_print(DLOG_INFO, LOG_TAG, "Fuck bp_manager_tizen_dbus_server_run 1\n");
+	ret = dbus_bus_request_name(conn, bp_manager_bus_name, DBUS_NAME_FLAG_REPLACE_EXISTING , &err);
+
+    dlog_print(DLOG_INFO, LOG_TAG, "Fuck bp_manager_tizen_dbus_server_run 2\n");
 	//Check for dbus error
 	if (dbus_error_is_set(&err)) 
 	{
@@ -113,105 +122,49 @@ int bp_manager_tizen_dbus_server_run()
 		dbus_error_free(&err);
 	}
 
+    dlog_print(DLOG_INFO, LOG_TAG, "Fuck bp_manager_tizen_dbus_server_run 3\n");
 	if (NULL == conn) 
 	{
 		dlog_print(DLOG_INFO, LOG_TAG,  "Connection Null\n");
 		exit(1);
 	}
 
-	//request our name on the bus and check for errors
-	//ret = dbus_bus_request_name(conn, bp_manager_bus_name, DBUS_NAME_FLAG_REPLACE_EXISTING , &err);
-
-	//For request name, check error
-	//if (dbus_error_is_set(&err)) 
-	//{
-	//	dlog_print(DLOG_INFO, LOG_TAG, "Name Error (%s)\n", err.message);
-	//	dbus_error_free(&err);
-	//}
-
-	//Check for primary for the requested name
-	//if (DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER != ret) 
-	//{
-	//	dlog_print(DLOG_INFO, LOG_TAG,  "Not Primary Owner (%d)\n", ret);
-	//	exit(1);
-	//}
-
-	//The below two line are very important steps to received this signal "request.to.launcherdaemon"
-	//dbus_bus_add_match(conn, "type='signal',interface='request.to.launcherdaemon'", &err); // see signals from the given interface
-	//dbus_connection_flush(conn);
-
-	//Wait for new message
-	while (true) 
+    dlog_print(DLOG_INFO, LOG_TAG, "Fuck bp_manager_tizen_dbus_server_run 4\n");
+	while(true) 
 	{
-		int received_val = 0;
-		char *received_str = NULL;
-		int current_type;
+		sleep(3);
+		dlog_print(DLOG_INFO, LOG_TAG, "Fuck Start remote method call:: %s\n", bp_manager_bus_name);
+		msg = dbus_message_new_method_call(bpm_bus_name, // target for the method call
+									bpm_object_path, // object to call on
+									bpm_interface_name, // interface to call on
+									bpm_method_name_1); // method name
+		dlog_print(DLOG_INFO, LOG_TAG, "End remote method call %s\n", bp_manager_bus_name);
+		// append arguments
+		dbus_message_iter_init_append(msg, &args);
 
-		//non blocking read of the next available message
+		if (!dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &param)) {
+			dlog_print(DLOG_INFO, LOG_TAG, "Out Of Memory!\n");
+			exit(1);
+		}
+
+		// send message and get a handle for a reply
+		if (!dbus_connection_send_with_reply (conn, msg, &pending, -1)) { // -1 is default timeout
+			dlog_print(DLOG_INFO, LOG_TAG, "[Client] Out Of Memory!\n");
+			exit(1);
+		}
 		
-		dbus_connection_read_write(conn, 0);
-		msg = dbus_connection_pop_message(conn);
-		
-    	//loop again if we haven't got a message
-		if (NULL == msg) 
-		{
-			//dlog_print(DLOG_INFO, LOG_TAG, "bp_manager method call received request is null.\n");
-			continue;
-		}
-         dlog_print(DLOG_INFO, LOG_TAG, "bp_manager method call received request is not null.\n");
-			
-		//check this is a method call for the right interface & method
-		if (dbus_message_is_method_call(msg, bp_manager_interface_name, bp_manager_method_name_1)) 
-		{
-		     //reply_to_method_call(msg, conn);
-			dlog_print(DLOG_INFO, LOG_TAG, "bp_manager received request for %s %s\n", bp_manager_interface_name, bp_manager_method_name_1);
-			reply_to_method_call(msg, conn);
-			break;
-		}
-#if 0
-		//if not a method, then signal?
-		else if (dbus_message_is_signal(msg, interface_name_of_the_signal, name_of_the_signal)) 
-		{
-			dlog_print(DLOG_INFO, LOG_TAG, "[SystemServerD] SIGNAL received request for %s\n", name_of_the_signal);
-			int still_left = FALSE;
+		dlog_print(DLOG_INFO, LOG_TAG, "sent message..dbus_connection_send_with_reply");
 
-			if (!dbus_message_iter_init(msg, &args)) 
-			{
-				dlog_print(DLOG_INFO, LOG_TAG, "[SystemServerD] SIGNAL has no message to get \n");
-				continue;
-			}
- 
-			do 
-			{
-				//read the parameters
-				int args_type = dbus_message_iter_get_arg_type(&args);
-				switch(args_type) {
-				case DBUS_TYPE_UINT32 :
-					dbus_message_iter_get_basic(&args, &received_val);
-					dlog_print(DLOG_INFO, LOG_TAG, "[SystemServerD] SIGNAL parsed int %d\n", received_val);
-					break;
-				case DBUS_TYPE_DOUBLE:
-					break;
-				case DBUS_TYPE_STRING:
-					dbus_message_iter_get_basic(&args, &received_str);
-					dlog_print(DLOG_INFO, LOG_TAG, "[SystemServerD] SIGNAL parsed string %s\n", received_str);
-					break;
-				default:
-					break;
-				}
-				still_left = dbus_message_iter_next(&args); //TRUE = 1 , FALSE = 0
-			} while (still_left == TRUE);
+		if (NULL == pending) {
+			dlog_print(DLOG_INFO, LOG_TAG, "[Client] Pending Call Null\n");
+			exit(1);
+		}
+		dbus_connection_flush(conn);
 
-			// TODO(vincent): Action should be defined.
-		}
-		else 
-		{
-			dlog_print(DLOG_INFO, LOG_TAG, "DBus type others\n");
-			//Ignore something not filtered. May think about what can be placed here.
-		}
-		// free the message
-		dbus_message_unref(msg);
-#endif		
+		if (NULL == msg) {
+			dlog_print(DLOG_INFO, LOG_TAG, "[Client] Message Null\n");
+			exit(1);
+		}		
     }
         	// close the connection
 	dbus_connection_close(conn);

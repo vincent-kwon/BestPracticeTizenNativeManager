@@ -112,14 +112,30 @@ mkdir -p %{buildroot}%{_unitdir}/multi-user.target.wants
 mkdir -p %{buildroot}%{_unitdir_user}/sockets.target.wants
 
 # TODO(vincent): Need to copy service file for systemd
+#################################################
+# Install 
+# packaging/bps-bp-manager-tizen.service
+# /usr/lib/systemd/system/bps-bp-manager-tizen.service
+#################################################
 install -m 0644 %SOURCE1 %{buildroot}%{_unitdir}/bps-bp-manager-tizen.service
 
-# TODO(vincent): Need to launch at boot
+#################################################
+# Install 
+# packaging/bps-bp-manager-tizen.service for auto launch
+# /usr/lib/systemd/system/multi-user.target.wants/bps-bp-manager-tizen.service
+#################################################
 ln -s bps-bp-manager-tizen.service %{buildroot}%{_unitdir}/multi-user.target.wants/bps-bp-manager-tizen.service
 
+
+#################################################
+# Install 
+# bps-bp-manager.conf needed (missing)
+# /usr/lib/tmpfiles.d/alarm-manager.conf
+#################################################
 # TODO(vincent): missing this module's conf file (aka alarm-manager.conf)
 # install -m 0644 %source4 /buildroot/tmpfilesdir/alarm-manager.conf 
 # /usr/lib/tmpfiles.d/alarm-manager.conf
+# [contents]
 # d /run/alarm_agent 0777 root users -
 # d /var/log/appfw/alarmmgr_log 0775 app_fw app_fw -
 
@@ -152,25 +168,53 @@ echo %{_sysconfdir}
 #                May cmake create this in /usr/bin (may make install?)
 %{_bindir}/bps-bp-manager-tizen*
 
+#################################################
+# packaging/bps-bp-manager-tizen.service
+# /usr/lib/systemd/system/bps-bp-manager-tizen.service
+# purpose: systemd service info
+#################################################
 # TODO(vincent): _unitdir is /usr/lib/systemd/systemd
 # TODO(vincent): Purpose: All services must be defined in this folder to be handled by systemd.
 #                Line 115 install it
 %attr(0644,root,root) %{_unitdir}/bps-bp-manager-tizen.service
 
+#################################################
+# packaging/bps-bp-manager-tizen.service
+# /usr/lib/systemd/system/bps-bp-manager-tizen.service at boot
+# purpose: systemd service info auto boot
+#################################################
 # TODO(vincent): Add to /usr/lib/systemd/systemd/multi-user.target.wants to start this service at boot.
 %{_unitdir}/multi-user.target.wants/bps-bp-manager-tizen.service
 
+#################################################
+# src/org.tizen.bp.manager.tizen.service.in
+# /usr/share/dbus-1/system-service/org.tizen.bp.manager.tizen.service
+# purpose: d-bus service info used for DBus launch
+#################################################
 # TODO(vincent): {_datadir} is /usr/share and it describes d-bus service name, systemservice info
 #                 Why we need it? for what? why it is org.tizen.xxx format?
 #                 How /usr/share/dbus-1/system-service/org.tizen.bp.manager.tizen.service installed? in src/CMakeFiles.txt
 #                 INSTALL(FILES ${DBUS_INTERFACE}.service DESTINATION ${SHARE_INSTALL_PREFIX}/dbus-1/system-services/)
 #                 if applications want to be activated on the system and session buses, then service files
 #                 should be installed 
+# [Contents]
+#
+# [D-BUS Service]
+#  Name=@DBUS_INTERFACE@
+#  Exec=/bin/false
+#  /usr/lib/systemd/system/bps-bp-manager-tizen.service
+#  SystemdService=@SERVER@.service
 %attr(0644,root,root) %{_datadir}/dbus-1/system-services/org.tizen.bp.manager.tizen.service
 
 %license LICENSE
 
-# TODO(vincent): what is this file???
+#################################################
+# src/bps-bp-manager-tizen.conf.in
+# /etc/dbus-1/system.d/bps-bp-manager-tizen.conf
+# purpose: allow, deny DBus API set
+#################################################
+# TODO(vincent): Allow file
+# dbus-daemon --fork --config-file=/etc/dbus-1/system.d/bps-bp-manager-tizen.conf
 %config %{_sysconfdir}/dbus-1/system.d/bps-bp-manager-tizen.conf
 
 #%post -n bps-bp-manager-tizen-unittests
